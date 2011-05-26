@@ -129,22 +129,26 @@ class uwseg:
         if(count > 0): 
             self.all_dict[word] = count
      
-    def compute_seg_prob(self,left,right,joint):
+    def compute_seg_prob(self, left, right, joint, dict all_dict):
         """
         """
-        wordsize = len(self.all_dict)
-        joint_count = self.all_dict.get(joint,0)
-        left_count = self.all_dict.get(left,0)
-        right_count = self.all_dict.get(right,0)
+        cdef int wordsize, joint_count, left_count, right_count
+        cdef double factor0, factor1, ratio_1to0
+
+        wordsize = len(all_dict)
+        joint_count = all_dict.get(joint,0)
+        left_count = all_dict.get(left,0)
+        right_count = all_dict.get(right,0)
         factor0 = (self.base_prob(joint)+joint_count)
         factor1 = (self.base_prob(left)+left_count)*(self.base_prob(right)+right_count)*0.99
         ratio_1to0 = 1.0*factor1/((ALPHA+wordsize-2)*factor0)
         return ratio_1to0/(ratio_1to0+1)
     
-    def gibbs_sample(self,T):
+    def gibbs_sample(self, int T):
         """
         对隐变量进行循环采样
         """
+        cdef int i, findex, oldflag, cur_index, ri, ci
         for i in range(T):
             if(i%100 == 0):
                 print i
@@ -188,7 +192,7 @@ class uwseg:
                     self.subtract(right_string)
                 
                 #计算采样概率
-                prob1=  self.compute_seg_prob(left_string,right_string,joint_word)
+                prob1=  self.compute_seg_prob(left_string,right_string,joint_word, self.all_dict)
                 #进行采样
                 newflag = self.bernuoli(prob1)
                 #print 'f:'+str(flag)
@@ -221,10 +225,11 @@ class uwseg:
         instream.close()
         self.storeresult(0)
         
-    def bernuoli(self,p):
+    def bernuoli(self, double p):
         """
         按照指定概率对结果采样,输出1的概率
         """
+        cdef double f
         f = random.random()
         if(f<p):
             return 1
@@ -288,6 +293,9 @@ class uwseg:
 
 if __name__=='__main__':
     import sys
+    from time import time
+    t0 = time()
     infile = sys.argv[1]
     u = uwseg(infile)
     u.do_training()
+    print "time:", time() - t0

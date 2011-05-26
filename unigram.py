@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
 # unsupervised_wordseg.py
@@ -12,9 +12,8 @@ import bz2, gzip
 import string 
 import random
 import re
-#from tools.myutil import uprint
 
-ALPHA = 2
+ALPHA = 10
 
 def sopen(filename, mode='rb', encoding='utf8', errors='strict'):
     """ Transparently uses compression on the given file based on file
@@ -149,7 +148,7 @@ class uwseg:
         for i in range(T):
             if(i%100 == 0):
                 print i
-            if(i%30000 == 0):
+            if(i%1000 == 0):
                 self.storeresult(i)
             
             for findex in range(self.corpsize-1):
@@ -237,7 +236,7 @@ class uwseg:
         """
         self.start()
         self.initcount()
-        self.gibbs_sample(150000)
+        self.gibbs_sample(10000)
    
     def start_inference(self):
         """
@@ -288,10 +287,10 @@ class uwseg:
         self.gibbs_sample(30000)
 
 if __name__=='__main__':
-   #u = uwseg('/home/wengwei/peopledaily/199801part.txt')
-   #u = uwseg('/home/wengwei/国内103.content')   
-   u = uwseg('/home/wengwei/segimprovetest/国内187.seg')
-   u.do_inference()
-
-
-        
+    import sys
+    from time import time
+    t0 = time()
+    infile = sys.argv[1]
+    u = uwseg(infile)
+    u.do_training()
+    print "time:", time() - t0

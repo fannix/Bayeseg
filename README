@@ -1,0 +1,16 @@
+Bayesian unsupervised segmentation.
+
+BUilding Command:
+python2 setup.py build_ext --inplace
+
+Running Command:
+./unigram_main.py infile
+
+
+Performance when given a Chinese text:
+Python version: 348s
+Cython version: 107s
+
+References:
+
+Bayesian with tears, Kevin Knight.
