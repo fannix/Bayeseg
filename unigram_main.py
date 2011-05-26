@@ -1,0 +1,7 @@
+from unigram import uwseg
+
+if __name__=='__main__':
+    import sys
+    infile = sys.argv[1]
+    u = uwseg(infile)
+    u.do_training()
